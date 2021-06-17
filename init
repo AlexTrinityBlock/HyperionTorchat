@@ -1,0 +1,8 @@
+#!/bin/bash
+service tor start;
+cp /var/lib/tor/other_hidden_service/hostname /hostname
+chmod -R  777  /hostname
+export TORHOST=$(cat  /var/lib/tor/other_hidden_service/hostname);
+proxychains python3 /app/chat_server.py;
+
+
