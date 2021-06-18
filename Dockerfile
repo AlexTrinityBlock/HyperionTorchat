@@ -16,7 +16,7 @@ RUN apt-get update &&\
 #把腳本啟動檔傳入
 COPY ./init/init /
 COPY ./etc/torrc /etc/tor/
-
+COPY ./etc/proxychains4.conf /etc/proxychains4.conf
 #啟動觸發腳本
 CMD bash init && bash
 
