@@ -1,0 +1,5 @@
+#!/bin/bash
+echo "請在下方輸入洋蔥網址"
+read ONIONURL
+clear
+docker-compose exec torchatpublic proxychains   netcat -v  $ONIONURL 9052 

@@ -10,11 +10,12 @@ RUN apt-get update &&\
 	apt-get install python3 -y&&\
 	apt-get install python3-pip -y&&\
 	apt-get install proxychains4  -y&&\
+	apt-get install netcat  -y&&\
 	echo "Done"
 
 #把腳本啟動檔傳入
-COPY init /
-COPY torrc /etc/tor/
+COPY ./init/init /
+COPY ./etc/torrc /etc/tor/
 
 #啟動觸發腳本
 CMD bash init && bash

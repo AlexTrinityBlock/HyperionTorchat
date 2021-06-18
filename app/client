@@ -1,5 +1,0 @@
-#!/bin/bash
-source /init
-apt install netcat -y;
-clear;
-netcat -v -x 127.0.0.1:9050 $TORHOST 9052;

@@ -1,0 +1,20 @@
+#!/bin/bash
+
+while true
+do
+	clear
+	echo " 
+指令如下:
+--------------------
+啟動聊天聊天伺服器 run
+關閉聊天聊天伺服器 stop
+連接自己的聊天伺服器 client
+連接別人的聊天伺服器 remote
+取得自己的洋蔥網址 hostname
+登入伺服器主機控制台 shell
+
+(ctrl + C 離開)
+"
+	read CHATCOMMAND
+	./command/$CHATCOMMAND && break || clear 
+done
