@@ -57,11 +57,17 @@ def nameIsUsed(username):
 			return True
 	return False
 
+#取得歡迎詞
+def getWelcome():
+	with open('welcome','r') as file:
+		text = file.read()
+	return text
+
 #客戶端執行緒函數
 def clientthread(conn, addr):
 	try:
 		#歡迎詞
-		welcome="""你好，你知道嗎？\n希臘神話裡頭有一扇門稱為海博利昂\n冥河之門\n我猜我們最終都會走向那扇門\n門後的未知，你我都猜不透\n\n\n我是撰寫這個聊天室的撰寫者，特別感謝我的朋友李智*幫我測試\n大家玩得愉快\n"""
+		welcome=getWelcome()
 		conn.send(welcome.encode("UTF-8"))
 		print("用戶執行緒建立成功，開始回應 \n")
 		conn.send("請告訴我你的名字（至少三個字）\n".encode("UTF-8"))
