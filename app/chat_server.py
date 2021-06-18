@@ -10,6 +10,9 @@ Port = 9052
 #使用者清單
 list_of_clients = []
 
+#歡迎詞
+welcome =""
+
 #客戶資料結構
 class Client:
 	def __init__(self):
@@ -59,15 +62,13 @@ def nameIsUsed(username):
 
 #取得歡迎詞
 def getWelcome():
-	with open('welcome','r') as file:
+	with open('/app/welcome','r') as file:
 		text = file.read()
 	return text
 
 #客戶端執行緒函數
 def clientthread(conn, addr):
 	try:
-		#歡迎詞
-		welcome=getWelcome()
 		conn.send(welcome.encode("UTF-8"))
 		print("用戶執行緒建立成功，開始回應 \n")
 		conn.send("請告訴我你的名字（至少三個字）\n".encode("UTF-8"))
@@ -135,7 +136,13 @@ def remove(username):
 
 #主函數
 if __name__ == '__main__':
+	
+	#載入歡迎詞
+	print("載入歡迎詞")
+	welcome=getWelcome()
+
 	#設置連線
+	print("設置socket連線參數")
 	server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 	server.bind(("0.0.0.0", Port))
