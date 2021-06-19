@@ -2,4 +2,5 @@
 clear
 docker-compose exec torchatpublic proxychains   netcat -vz  $(./command/hostname) 9052 
 docker-compose exec torchatpublic proxychains   netcat -vz  $(./command/hostname) 9052 
+clear
 docker-compose exec torchatpublic proxychains   netcat -v  $(./command/hostname) 9052 
