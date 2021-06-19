@@ -3,7 +3,6 @@ services:
   torchatpublic:
     image: tor_chat_server:1.0.1a
     build: .
-    network_mode: host
     tty: true
     volumes:
       - ./app:/app 

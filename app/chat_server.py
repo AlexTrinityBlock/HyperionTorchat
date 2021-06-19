@@ -1,8 +1,7 @@
-# Python program to implement server side of chat room.
 import socket
-import select
-import sys
+import subprocess
 from _thread import *
+import time
 
 #偵聽port
 Port = 9052
@@ -63,6 +62,12 @@ def nameIsUsed(username):
 #取得歡迎詞
 def getWelcome():
 	with open('/app/welcome','r') as file:
+		text = file.read()
+	return text
+
+#取得歡迎詞
+def getHostName():
+	with open('/var/lib/tor/other_hidden_service/hostname','r') as file:
 		text = file.read()
 	return text
 
@@ -133,23 +138,73 @@ def remove(username):
 	print("嘗試從維護連線清單刪除用戶\n",username)
 	del list_of_clients[index]
 
+#設置伺服器
+def serverObject():
+	#設置連線
+	server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+	server.bind(("0.0.0.0", Port))
+	server.listen(100)
+	return server;	
+
+#設置伺服器
+def clientObject(host,port):
+	client = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
+	client.settimeout(10)
+	print("嘗試連接",host,"\n","port",port)
+	client.connect((host, port))
+	return client
+
+#連線預備
+#由於第一次連上tor的onion url時，可能會失敗，我認為是DNS尚未傳播造成的
+#所以我想在連線之前，先進行一次自己存取自己的服務，直到成功，確保連線順暢
+def prepareConnectClient():
+	while True:
+		time.sleep(1)
+		try:
+			hostname=cleanString(getHostName())
+			subprocess.check_output(['proxychains','netcat','-vz',hostname,'9052'])
+			print("[連線測試子程序]:成功，結束連線測試子程序")
+			break
+		except Exception as e:
+			print("[連線測試子程序]:連接測試失敗，並重試")
+			pass
+
+def prepareConnect():
+	print("[連線測試]:開始")
+	while True:
+		try:
+			server=serverObject()
+			start_new_thread(prepareConnectClient,())
+			print("[連線測試]:測試伺服端開始監聽")
+			conn, addr=server.accept()
+			print("[連線測試]:測試成功")
+			server.close()
+			print("[連線測試]:結束連線測試主程序")
+			break
+		except Exception as e:
+			print("[連線測試]:伺服端啟動失敗，重新嘗試")
+			print(e)
+			exit()
+
+
 
 #主函數
 if __name__ == '__main__':
 	
 	#載入歡迎詞
-	print("載入歡迎詞")
+	print("[伺服器]:載入歡迎詞")
 	welcome=getWelcome()
 
-	#設置連線
-	print("設置socket連線參數")
-	server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-	server.bind(("0.0.0.0", Port))
-	server.listen(100)
+	#連線測試
+	prepareConnect()
+	print("[伺服器]:連線測試完畢，進入伺服器主程序")
+
+	#取得連線實例
+	server=serverObject()
 	while True:
 		conn, addr = server.accept()
-		print ("遠端主機嘗試連線伺服器\n")
+		print ("[伺服器]:遠端主機嘗試連線伺服器\n")
 		#建立子執行緒
 		start_new_thread(clientthread,(conn,addr))	
 
